@@ -1,0 +1,17 @@
+{
+  "name": "challenge3",
+  "version": "1.0.0",
+  "description": "Wizeline Academy - Challenge 3: Performance Test Automation using Artillery",
+  "main": "index.js",
+  "scripts": {
+    "test-complete-task-flow": "artillery run ./performance/complete_flow.yml",
+    "get-first-task-and-delete": "artillery run ./performance/get-first-task-and-delete.yml"
+  },
+  "author": "Victor Llamas",
+  "license": "ISC",
+  "devDependencies": {
+    "artillery": "^1.7.2",
+    "artillery-plugin-faker": "^3.0.0",
+    "faker": "^5.5.3"
+  }
+}

@@ -1,0 +1,30 @@
+config:
+  target: "https://api.todoist.com"
+  phases: 
+    - duration: 60
+      arrivalRate: 1
+      name: "Warm up"
+  plugins:
+    faker:
+      locale: en
+  defaults:
+    headers: 
+      Authorization: Bearer 0c79c91aef247a48dd192407d891688c085ca9d2
+      Content-Type: application/json
+  variables:
+    project_id:
+      - 2267072551
+    url_task:
+      - "/rest/v1/tasks"
+scenarios:
+  - name: "Get All Active Tasks"
+    flow:
+      - get:
+          url: "{{ url_task }}"
+          capture:
+            json: "$[0].id"
+            as: "id_task"
+      - log: "task ID is {{ id_task }}"
+      - think: 1
+      - delete:
+          url: "{{ url_task }}/{{ id_task }}"

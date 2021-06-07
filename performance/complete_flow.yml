@@ -1,0 +1,73 @@
+config:
+  target: "https://api.todoist.com"
+  processor: "../helper/functions.js"
+  phases: 
+    - duration: 3
+      arrivalRate: 1
+      name: "Warm up"
+    - duration: 5
+      arrivalRate: 1
+      rampTo: 3
+      name: "Ramp up load"
+    - duration: 15
+      arrivalRate: 3
+      name: "Sustained load"
+  plugins:
+    faker:
+      locale: en
+  defaults:
+    headers: 
+      Authorization: Bearer 0c79c91aef247a48dd192407d891688c085ca9d2
+      Content-Type: application/json
+  variables:
+    project_id:
+      - 2267072551
+    url_task:
+      - "/rest/v1/tasks"
+    url_close:
+      - "close"
+    url_reopen:
+      - "reopen"
+    task_desc:
+      - "$faker.commerce.productDescription"
+    task_name:
+      - "$faker.commerce.productName"
+scenarios:
+  - name: "Entire E2E: Create - Update - Get specific Task - Complete - Reopen, Get All tasks and Delete tasks"
+    flow:
+      - function: randomNumber
+      - post:
+          url: "{{ url_task }}"
+          json: 
+            content: "Buy {{ task_name }}"
+            project_id: "{{ project_id }}"
+          capture:
+            json: "$.id"
+            as: "task_id"
+      - log: "Task ID is: {{ task_id }}"
+      - think: 2
+      - post:
+          url: "{{ url_task }}/{{ task_id }}"
+          json:
+            description: "{{ task_desc }}"
+            priority: "{{ r_priority }}"
+      - log: "Task priority is: {{ r_priority }}. Task Description is: {{ task_desc }}"
+      - think: 2
+      - get:
+          url: "{{ url_task }}/{{ task_id }}"
+          capture:
+            json: "$"
+            as: "response"
+      - log: "Get Task Response is: {{ response }}"
+      - think: 2
+      - post:
+          url: "{{ url_task }}/{{ task_id }}/{{ url_close }}"
+      - think: 2
+      - post:
+          url: "{{ url_task }}/{{ task_id }}/{{ url_reopen }}"
+      - think: 2
+      - get:
+          url: "{{ url_task }}"
+      - think: 3
+      - delete:
+          url: "{{ url_task }}/{{ task_id }}"
